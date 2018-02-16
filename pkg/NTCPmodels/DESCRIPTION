@@ -1,11 +1,25 @@
 Package: NTCPmodels
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Fits Normal Tissue Complication Probability  models
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Authors@R: c(person("Chamberlain", "Mbah", email = "chamberlain.mbah@ugent.be",
+                  role = c("cre")),
+           person("Joris", "Meys", email = "jorismeys@gmail.com",
+                  role = "aut"))
+Description: Fits the Lyman and the Logit NTCP models, with:
+    (1) the   equivalent uniform dose (EUD) 
+    (2) the equivalent dose at 2Gy    (EQD2) and the EUD. 
+        There is the possibility of extending the NTCP model with other 
+        clinical/  genetic variables. The package contains special 
+        functions for dose volume histograms (DVH),  differential  
+        DVH and  diagnostic plots for wrong DVH data.  
+License: GPL-2 
+Depends: gnm
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.0.1
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr

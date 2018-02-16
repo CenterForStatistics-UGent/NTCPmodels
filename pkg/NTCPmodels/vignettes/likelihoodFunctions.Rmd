@@ -1,0 +1,38 @@
+---
+title: "Likelihood and gradient functions for optim"
+author: "Chamberlain Mbah"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{NTCPmodels}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+#Likelihood functions
+Note that the `optim()` function in the `stats` package requires a (log) likelihood function (the objective function) and its gradient function. Also  for any link function $g$ and for a patient with Kutcher Burnman EUD denoted as EUD$_\text{KB}$, the NTCP is given by
+$$
+P(Y=1|EUD_\text{KB})=g(\tau(EUD_\text{KB}))
+$$
+where $\tau$ is the functional form relating the predictors and their parameters.  For an NTCP model with and  EQD2 normalisation  and an EUD reduction scheme, the Kutcher Burman EUD (EUD$_\text{KB}$)  corrected for fractionation is given by
+$$
+\text{EUD}_\text{KBf}=\frac{1}{m}\left(\text{EUD}_\text{KB}\frac{1}{TD_{50}}\frac{d_f+\theta}{2+\theta}-1\right).
+$$
+The derivatives of $\text{EUD}_\text{KBf}$ with respect to the different parameters is given by
+$$
+\frac{\partial \text{EUD}_\text{KBf}}{\partial m}=-\frac{1}{m^2}\left(\text{EUD}_\text{KB}\frac{1}{TD_{50}}\frac{d_f+\theta}{2+\theta}-1\right)
+$$
+
+$$
+\frac{\partial \text{EUD}_\text{KBf}}{\partial TD_{50}}=-\frac{1}{m}\left(\text{EUD}_\text{KB}\frac{1}{(TD_{50})^2}\frac{d_f+\theta}{2+\theta}\right)
+$$
+
+$$
+\frac{\partial \text{EUD}_\text{KBf}}{\partial \theta}=\frac{1}{m}\left(\text{EUD}_\text{KB}\frac{1}{TD_{50}}\frac{2-d_f}{(2+\theta)^2}\right)
+$$

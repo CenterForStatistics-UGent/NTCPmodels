@@ -21,13 +21,7 @@ gra.lf<- function(param, EUD, frac,y,FUN) {
   grad
 }
 
-
-
-NTCP<-function(DVH,
-               fractionation,
-               toxicity,
-               link=c("probit","logit"),
-               n=NULL)
+prepare.DVH<-function(DVH,n=NULL)
 {
   len<-length(DVH)
   d<-matrix(rep(0,1000*len),ncol = len)
@@ -38,7 +32,6 @@ NTCP<-function(DVH,
     dvh<-DVH[[i]]
     lenn<-length(dvh[,2])
     v[i,][1:(lenn)]<-c(0,-diff(dvh[,2]/max(dvh[,2])))
-    #d[,i][1:(lenn)]<-dvh[,1]
     grp<-diff(dvh[,1])
     if(unique(grp)>1)stop(paste("The dose bin size of the observation",i,"has a problem"))
     binSize[i]<-unique(grp)
@@ -52,7 +45,6 @@ NTCP<-function(DVH,
     seqq<-seq(levs[ii],100,by=levs[ii])
     doseBins[,ii][1:length(seqq)]<-seqq
   }
-
   if(is.null(n))
   {
     len2<-30
@@ -69,19 +61,37 @@ NTCP<-function(DVH,
   for(k in 1:len2)
   {
     for(j in 1:ll1)
-    EUDn[,k][binSize==levs[j]]<-(v[binSize==levs[j],]%*%(doseBins[,j]^(1/n[k])))^n[k]
+      EUDn[,k][binSize==levs[j]]<-(v[binSize==levs[j],]%*%(doseBins[,j]^(1/n[k])))^n[k]
   }
 
-  param <- c(theta = 3, TD50 = 30, m = 2)
-  paras<-list()
-  length(paras)<-len2
-  link<-match.arg(link)
-  switch (link,pnorm=probit,logit=plogis)
+  list(EUD=EUDn,n=n)
+}
+
+prepare.DVH(DVH)
+NTCP<-function(DVH,
+               fractionation,
+               toxicity,
+               link=c("probit","logit"),
+               n=NULL,
+               start.Value=c(theta = 4, TD50 = 30, m = 1))
+{
+  link=match.arg(link)
+  if(!link %in% c("probit","logit"))
+    stop("Link must be either 'probit' or  'logit'")
+  preDVH<-prepare.DVH(DVH,n=n)
+
+  n<-preDVH$n
+  len2<-length(preDVH$n)
+  paras<-data.frame(matrix(rep(NA,len2*4),ncol=4))
+  colnames(paras)<-c("n", "theta","TD_50","m")
+  paras$n<-round(n,2)
+
 
 for(kk in 1:len2)
   {
-  fit<- tryCatch(expr=optim(param, llf, gr=  gra.lf, EUD=EUDn[,kk],
-                        frac=fractionation,y=toxicity,FUN=FUN,
+  if(link=="probit")
+  fit<- tryCatch(expr=optim(start.Value, llf, gr=  gra.lf, EUD=preDVH$EUD[,kk],
+                        frac=fractionation,y=toxicity,FUN=pnorm,
                         method="L-BFGS-B", control=list(trace=TRUE, REPORT=1),
                         hessian=TRUE,
                         lower=c(0,0,-1000),upper=c(100,100,1000)),
@@ -89,14 +99,29 @@ for(kk in 1:len2)
                message(paste("EUD could not be computed for n =", n[kk]))
                return(NA)
              })
- paras[[kk]]<-fit
+  else
+    fit<- tryCatch(expr=optim(start.Value, llf, gr=  gra.lf, EUD=preDVH$EUD[,kk],
+                              frac=fractionation,y=toxicity,FUN=plogis,
+                              method="L-BFGS-B", control=list(trace=TRUE, REPORT=1),
+                              hessian=TRUE,
+                              lower=c(0,0,-1000),upper=c(100,100,1000)),
+                   error=function(cond) {
+                     message(paste("EUD could not be computed for n =", n[kk]))
+                     return(NA)
+                   })
+  if(!is.na(fit[[1]][1]))
+    paras[kk,2:4]<-fit$par
+  else
+    paras[kk,2:4]<-rep(NA,3)
+
 
 }
-  out<-list(modelInfor=paras,dataInfo=EUDn,toxicity=toxicity,fractionation=fractionation,link=link)
+  out<-list(modelInfor=paras,dataInfo=preDVH$EUD,toxicity=toxicity,fractionation=fractionation,link=link,n=n)
 
 }
-fit<-NTCP(DVH,fractionation,toxicity,link = "probit")
-fit$link
+object<-NTCP(DVH,fractionation,toxicity,link=c("logit"),
+          start.Value=c(theta = 1, TD50 = 20, m = 1))
+fit$modelInfor
 xbeta<-function(param,EUD,fractionation)
 {
 (( (fractionation+param[1])/(2+param[1]))*(1/param[3])*(1/param[2])*EUD)-(1/param[1])

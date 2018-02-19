@@ -72,7 +72,7 @@ NTCP<-function(DVH,
     EUDn[,k][binSize==levs[j]]<-(v[binSize==levs[j],]%*%(doseBins[,j]^(1/n[k])))^n[k]
   }
 
-  param <- c(theta = 3, TD50 = 20, m = 2)
+  param <- c(theta = 3, TD50 = 30, m = 2)
   paras<-list()
   length(paras)<-len2
   link<-match.arg(link)
@@ -95,8 +95,7 @@ for(kk in 1:len2)
   out<-list(modelInfor=paras,dataInfo=EUDn,toxicity=toxicity,fractionation=fractionation,link=link)
 
 }
-fit<-NTCP(DVH,fractionation,toxicity,link = "logit",n=seq(0.01,1,length.out = 30)
-          )
+fit<-NTCP(DVH,fractionation,toxicity,link = "probit")
 fit$link
 xbeta<-function(param,EUD,fractionation)
 {

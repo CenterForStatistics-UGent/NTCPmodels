@@ -14,7 +14,6 @@ Description: Fits the Lyman and the Logit NTCP models, with:
         functions for dose volume histograms (DVH),  differential  
         DVH and  diagnostic plots for wrong DVH data.  
 License: GPL-2 
-Depends: gnm
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1

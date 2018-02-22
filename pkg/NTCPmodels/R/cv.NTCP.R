@@ -12,9 +12,10 @@ cv.NTCP<-function(DVH,
           fractionation,
           toxicity,n= NULL,
           link=c("probit","logit"),
-          type.measure = c("deviance","auc", "scale brier"),
+          measure = "auc",
           nfolds = 10, foldid, start.Value=c(theta = 4, TD50 = 30, m = 1))
 {
+  #type.measure<-match.arg(type.measure)
 
   N<-length(DVH)
   folds <- cut(seq(1,N),breaks=nfolds,labels=FALSE)
@@ -30,7 +31,10 @@ cv.NTCP<-function(DVH,
     measurefolds[[i]]<-apply(pred,2,function(x)auc.NTCPmodels(x,toxicity[testID]))
     }
 DT<-data.frame(unlist(measurefolds))
-aggregate(DT,list(names(unlist(measurefolds))),"mean")
+out<-aggregate(DT,list(names(unlist(measurefolds))),"mean")
+names(out)<-c("n",measure)
+class(out)<-"cvNTCPmodels"
+out
     }
 
 

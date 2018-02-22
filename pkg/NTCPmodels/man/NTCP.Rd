@@ -18,6 +18,8 @@ fraction for each patient.}
 \item{toxicity}{A vector of same length as the fractionation, contain toxicity status of
 all patients. Toxicity should be coded as 1 and no-toxicity coded as 0}
 
+\item{link}{The type of link function,should either be "logit" or "probit" link.}
+
 \item{n}{A vector or numeric constant, representing the \code{n} parameter in the
 Kutcher and Burman EUD reduction scheme, and should lie between 0 and 1.
 The defualt value is \code{NULL}. If no \code{n} constant or vector is supplied, NTCP will
@@ -35,4 +37,8 @@ The default starting values are \code{c(theta = 4, TD50 = 30, m = 1)}}
 \details{
 This function fits NTCP, Lyman models, and can account for fractionation. Logit  models
 can also be fitted
+}
+\examples{
+fit<-NTCP(DVH,fractionation, toxicity,link="logit")
+summary(fit)
 }

@@ -1,9 +1,3 @@
-library(glmnet)
-xbeta<-function(param,EUD,fractionation)
-{
- param<-as.numeric(param)
-  (( (fractionation+param[1])/(2+param[1]))*(1/param[3])*(1/param[2])*EUD)-(1/param[3])
-}
 
 predict.NTCPmodels<-function (object, newDVH,newFractionation, type = c("link", "response","class"))
 {

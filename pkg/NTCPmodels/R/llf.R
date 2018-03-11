@@ -1,6 +1,11 @@
-llf<- function(param, EUD, frac,y,FUN) {
-  xbeta<- ((((frac+param[1])/(2+param[1]))*(1/param[2]))*EUD-1)*(1/param[3])
-  neglog<--sum(y*log(FUN(xbeta))+(1-y)*log(1-FUN(xbeta)))
+llf<- function(beta,X,y,FUN) {
+  #browser()
+  sF2<-1e-17
+  xbeta<- X%*%beta
+  A<-ifelse(FUN(xbeta)==0, sF2,FUN(xbeta))
+  A<-ifelse(FUN(xbeta)==1,1-sF2,A)
+  neglog<--sum(y*log(A)+(1-y)*log(1-A))
+  #if(is.nan(neglog) | is.na(neglog)|is.infinite(neglog))browser()
   neglog
 }
 

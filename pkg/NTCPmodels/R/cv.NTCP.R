@@ -13,7 +13,7 @@ cv.NTCP<-function(DVH,
           toxicity,n= NULL,
           link=c("probit","logit"),
           measure = "auc",
-          nfolds = 10, foldid, start.Value=c(theta = 4, TD50 = 30, m = 1))
+          nfolds = 10, foldid)
 {
   #type.measure<-match.arg(type.measure)
 
@@ -25,8 +25,10 @@ cv.NTCP<-function(DVH,
   for(i in 1:nfolds){
 
     testID <- which(folds==i,arr.ind=TRUE)
-    callNTCP<-NTCP(DVH[-testID],fractionation[-testID],
-                   toxicity[-testID],link,n,start.Value)
+    callNTCP<-NTCP(DVH[-testID],
+                   fractionation[-testID],
+                   toxicity[-testID],
+                   link,n)
     pred<-predict.NTCPmodels(callNTCP,DVH[testID],fractionation[testID],type="response")
     measurefolds[[i]]<-apply(pred,2,function(x)auc.NTCPmodels(x,toxicity[testID]))
     }

@@ -60,7 +60,7 @@ The input DVH data must be in the form of an `R list object`, whose entries are 
 library(NTCPmodels)
 str(DVH[1:2])
 ```
-If EQD2 transformation is neccesary, then make sure you have the fractionations of all the patients stored in a vector. For the inbuit data this is store in the `fractionation` object, see below.
+If EQD2 transformation is neccesary, then make sure you have the fractionations of all the patients stored in a vector. For the inbuit data,  fractionation is store in the `fractionation` object, see below.
 ```{r fractionation,message=FALSE}
 str(fractionation)
 
@@ -70,7 +70,7 @@ The toxicity data should be a vector of 0 (no toxicity) and 1 (toxicity) for all
 str(toxicity)
 ```
 
-
+##Other related  NTCP R packages
 `NTCPmodels` package only focuses on fitting NTCP models. However, the `RadOnc` package found  on CRAN, can read DICOM files directly into R and can extract DVH data from the DICOM files. Alternatively, `RadOnc`  also reads  dose volume histogram information from multiple treatment planning system platforms -- consult the vignette of `RadOnc` for details.  Another handy R package that facilitates DVH visualisation and some basic analysis is the `DVHmetrics` package, which can also be found on CRAN. `DVHmetrics` can  read DVH data from multilple treatment planing systems like `RadOnc`. In addition, `DVHmetric` can compute the EUD, EQD2 and NTCP, based on known parameter values.
 
 Both `RadOnc` and `DVHmetric` do not estimate parameters in the NTCP model,  they, never the less, can calculate NTCP and other DVH metrics such as EQD2 and the EUD based on parameters given by the user. The `NTCPmodels`  package is different in the sense that it actually estimates parameters in the  NTCP model. This means a dataset  with DVH  from a set patients go into the NTCP model and are used to estimate the model parameters. With the  estimated parameters , it is possible  to compute an  estimate of the NTCP, the EUD and EQD2, which all contain parameters that are estimable from the  NTCP model. 

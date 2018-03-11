@@ -1,16 +1,16 @@
-gra.lf<- function(param, EUD, frac,y,FUN) {
-  #Not the most elegant way of doing things but it works
-  if(names(formals(FUN)[2]) =="mean")FUN1<-dnorm
-  if(names(formals(FUN)[2]) =="location")FUN1<-dlogis
-  xbeta<- ((((frac+param[1])/(2+param[1]))*(1/param[2]))*EUD-1)*(1/param[3])
-  d_m<--((((frac+param[1])/(2+param[1]))*(1/param[2]))*EUD-1)*(1/param[3]^2)
-  d_TD50<--((((frac+param[1])/(2+param[1]))*(1/param[2]^2))*EUD)*(1/param[3])
-  d_theta<-((((2-frac)/(2+param[1])^2)*(1/param[2]))*EUD)*(1/param[3])
-  g_m<--sum(y*FUN(xbeta)/(FUN1(xbeta)*d_m)-(1-y)*(1-FUN(xbeta))/(FUN1(xbeta)*d_m))
-  g_TD50<--sum(y*FUN(xbeta)/(FUN1(xbeta)*d_TD50)-(1-y)*(1-FUN(xbeta))/(FUN1(xbeta)*d_TD50))
-  inter<-y*FUN(xbeta)/(FUN1(xbeta)*d_theta)-(1-y)*(1-FUN(xbeta))/(FUN1(xbeta)*d_theta)
-  inter[frac==2]<-0
-  g_theta<--sum(inter)
-  grad<-c(g_theta,g_TD50,g_m)
-  grad
+gra.lf<- function(param, Xy,FUN) {
+    sF<-1e5
+    sF2<-1e-17
+    X[,-1]<-X[,-1]/sF
+    grad <- beta*0
+    xbeta<-X%*%beta
+    A<-ifelse(FUN(xbeta)==0,sF2,FUN(xbeta))
+    A<-ifelse(FUN(xbeta)==1,1-sF2,A)
+    if(names(formals(FUN)[2]) =="mean")pdf<-dnorm
+    if(names(formals(FUN)[2]) =="location")pdf<-dlogis
+    for (k in 1:K) {
+      grad[k] <- sum(y*(pdf(xbeta)*X[,k])/(A)+ (y-1)*(pdf(xbeta)*X[,k])/(1-A))
+    }
+    grad[-1]<-grad[-1]*sF
+    return(-grad)
 }

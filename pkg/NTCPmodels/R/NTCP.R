@@ -35,41 +35,59 @@ NTCP<-function(DVH,
                fractionation,
                toxicity,
                link=c("probit","logit"),
-               n=NULL,
-               start.Value=c(theta = 4, TD50 = 30, m = 1))
+               n=NULL)
 {
   link=match.arg(link)
   if(!link %in% c("probit","logit"))
     stop("Link must be either 'probit' or  'logit'")
   preDVH<-prepare.DVH(DVH,n=n)
-
+  lln<-length(preDVH$EUD[,1])
   n<-preDVH$n
   len2<-length(preDVH$n)
   paras<-data.frame(matrix(rep(NA,len2*4),ncol=4))
-  colnames(paras)<-c("n", "theta","TD_50","m")
+  colnames(paras)<-c("n", "beta0","beta1","beta3")
   paras$n<-round(n,2)
 
 if(missing(fractionation))
   fractionation<-rep(2,length(toxicity))
-
+low<-  c(-100,0,0)
+up<-c(0,100,100)
 for(kk in 1:len2)
   {
+  X<-cbind(rep(1,lln),preDVH$EUD[,kk],fractionation*preDVH$EUD[,kk])
+  beta_0 =c(0,0,0)
+  initialMod<- optim(fn= function(beta,X,y){
+                                  sum((y -X%*%beta)^2)
+                                     },
+                     lower = low,
+                     upper=up,
+                     y=toxicity,X=X,
+                     par = beta_0,
+                     method="L-BFGS-B")
+
+
+  start.Value<-initialMod$par
   if(link=="probit")
-  fit<- tryCatch(expr=optim(start.Value, llf, gr=  gra.lf, EUD=preDVH$EUD[,kk],
-                        frac=fractionation,y=toxicity,FUN=pnorm,
+  fit<- tryCatch(expr=optim(start.Value, llf,X=X,
+                            #gr=  gra.lf,
+                        y=toxicity,FUN=pnorm,
                         method="L-BFGS-B", control=list(trace=TRUE, REPORT=1),
                         hessian=TRUE,
-                        lower=c(0,0,-1000),upper=c(100,100,1000)),
+                        lower=low,upper=up
+                        ),
              error=function(cond) {
                message(paste("EUD could not be computed for n =", n[kk]))
                return(NA)
              })
   else
-    fit<- tryCatch(expr=optim(start.Value, llf, gr=  gra.lf, EUD=preDVH$EUD[,kk],
-                              frac=fractionation,y=toxicity,FUN=plogis,
-                              method="L-BFGS-B", control=list(trace=TRUE, REPORT=1),
+    fit<- tryCatch(expr=optim(start.Value, llf,X=X,
+                              #gr=  gra.lf,
+                              y=toxicity,FUN=plogis,
+                              method="L-BFGS-B",
+                              control=list(trace=TRUE, REPORT=1),
                               hessian=TRUE,
-                              lower=c(0,0,-1000),upper=c(100,80,1000)),
+                              lower=low,upper=up
+                              ),
                    error=function(cond) {
                      message(paste("EUD could not be computed for n =", n[kk]))
                      return(NA)
@@ -81,7 +99,25 @@ for(kk in 1:len2)
 
 
 }
-  out<-list(modelInfor=paras,dataInfo=preDVH$EUD,toxicity=toxicity,fractionation=fractionation,link=link,n=n)
+
+
+  # exclude<-apply(paras[,c(2:4)],1,function(x)
+  # {
+  #
+  #   ret<-1
+  #   if(sum(x==start.Value)==3)
+  #   ret<-0
+  #   ret
+  # }
+  # )
+
+  m<--as.numeric(1/paras[,2])
+  theta<-as.numeric(paras[,3]/paras[,4])
+  TD_50<-as.numeric(preDVH$maxEUD/(m*(2+theta)*paras[,4]))
+  paras<-cbind(paras[,1],m, TD_50,theta)
+  EUDout<- as.data.frame(preDVH$EUD)
+  names(EUDout)<-paste("EUD_",sep="",round(n,2))
+  out<-list(modelInfor=paras,dataInfo=EUDout,toxicity=toxicity,fractionation=fractionation,link=link,n=n)
   class(out)<-"NTCPmodels"
   out
 

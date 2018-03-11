@@ -26,7 +26,7 @@ prepare.DVH<-function(DVH,n=NULL)
   if(is.null(n))
   {
     len2<-30
-    n<-seq(0.01,1,length.out = len2)
+    n<-seq(0.1,1,length.out = len2)
   }
   else
   {
@@ -42,5 +42,8 @@ prepare.DVH<-function(DVH,n=NULL)
       EUDn[,k][binSize==levs[j]]<-(v[binSize==levs[j],]%*%(doseBins[,j]^(1/n[k])))^n[k]
   }
 
-  list(EUD=EUDn/max(EUDn),n=n)
+maxEUD<-max(EUDn)
+  list(EUD=EUDn/maxEUD
+       ,maxEUD=maxEUD, n=n)
 }
+

@@ -4,8 +4,7 @@
 \alias{NTCP}
 \title{Fits NTCP models.}
 \usage{
-NTCP(DVH, fractionation, toxicity, link = c("probit", "logit"), n = NULL,
-  start.Value = c(theta = 4, TD50 = 30, m = 1))
+NTCP(DVH, fractionation, toxicity, link = c("probit", "logit"), n = NULL)
 }
 \arguments{
 \item{DVH}{A list of DVH data for all patients. Each element in the list is  a two columns \code{data.frame} of DVH

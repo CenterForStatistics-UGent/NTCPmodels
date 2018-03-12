@@ -47,9 +47,9 @@ NTCP<-function(DVH,
   paras<-data.frame(matrix(rep(NA,len2*4),ncol=4))
   colnames(paras)<-c("n", "beta0","beta1","beta3")
   paras$n<-round(n,2)
-
 if(missing(fractionation))
   fractionation<-rep(2,length(toxicity))
+
 low<-  c(-100,0,0)
 up<-c(0,100,100)
 for(kk in 1:len2)

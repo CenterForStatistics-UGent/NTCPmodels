@@ -31,10 +31,26 @@ cv.NTCP<-function(DVH,
                    link,n)
     pred<-predict.NTCPmodels(callNTCP,DVH[testID],fractionation[testID],type="response")
     measurefolds[[i]]<-apply(pred,2,function(x)auc.NTCPmodels(x,toxicity[testID]))
-    }
-DT<-data.frame(unlist(measurefolds))
-out<-aggregate(DT,list(names(unlist(measurefolds))),"mean")
-names(out)<-c("n",measure)
+  }
+  tmp<-unlist(measurefolds)
+  rmv<-!is.nan(tmp)
+  tmp<-tmp[rmv]
+DT<-data.frame(tmp)
+out<-aggregate(DT,list(names(tmp)),"mean")
+names(out)<-c("n","measure")
+if(measure=="auc")
+{
+  AUC<-out[,2]
+  N1<-table(toxicity)[1]
+  N2<-table(toxicity)[2]
+
+  Q1<-AUC/(2-AUC)
+  Q2<-(2*AUC^2)/(1+AUC)
+
+  seAUC<-sqrt((AUC*(1-AUC)+(N1-1)*(Q1-AUC^2)+(N2-1)*(Q2-AUC^2))/(N1*N2))
+  sd<-seAUC
+}
+out<-list(out,sd=sd,type.measure=measure)
 class(out)<-"cvNTCPmodels"
 out
     }

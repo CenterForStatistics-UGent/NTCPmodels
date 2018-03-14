@@ -8,7 +8,7 @@ auc.NTCPmodels<-function (y_pred, y_true)
   return(AUC)
 }
 
-cv.NTCP<-function(DVH,
+cv.NTCP<-function(DVH,XClin=NULL,
           fractionation,
           toxicity,n= NULL,
           link=c("probit","logit"),
@@ -25,11 +25,12 @@ cv.NTCP<-function(DVH,
   for(i in 1:nfolds){
 
     testID <- which(folds==i,arr.ind=TRUE)
-    callNTCP<-NTCP(DVH[-testID],
-                   fractionation[-testID],
-                   toxicity[-testID],
+    callNTCP<-NTCP(DVH=DVH[-testID],
+                   XClin=XClin[-testID,],
+                   fractionation=fractionation[-testID],
+                   toxicity=toxicity[-testID],
                    link,n)
-    pred<-predict.NTCPmodels(callNTCP,DVH[testID],fractionation[testID],type="response")
+    pred<-predict.NTCPmodels(callNTCP,newDVH=DVH[testID],newXClin=XClin[testID,],newFractionation=fractionation[testID],type="response")
     measurefolds[[i]]<-apply(pred,2,function(x)auc.NTCPmodels(x,toxicity[testID]))
   }
   tmp<-unlist(measurefolds)

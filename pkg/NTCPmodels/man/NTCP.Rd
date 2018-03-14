@@ -4,34 +4,31 @@
 \alias{NTCP}
 \title{Fits NTCP models.}
 \usage{
-NTCP(DVH, fractionation, toxicity, link = c("probit", "logit"), n = NULL)
+NTCP(DVH, XClin = NULL, fractionation, toxicity, link = c("probit",
+  "logit"), n = NULL)
 }
 \arguments{
-\item{DVH}{A list of DVH data for all patients. Each element in the list is  a two columns \code{data.frame} of DVH
-data for a patient. The first column of the the \code{data.frame} must be the dose and the second
+\item{DVH}{A list of DVH data for all patients. Each element in the list is  a two columns ```data.frame``` of DVH
+data for a patient. The first column of the the ```data.frame```` must be the dose and the second
 column must be the  volume recieving atmost that dose.}
 
-\item{fractionation}{A vector of same length as the \code{DVH} list,  which contains the dose per
-fraction for each patient.}
+\item{fractionation}{A vector of same length as the ```DVH``` list,  which contains the dose per
+fraction for each patient.
+#' @param Xclin A numeric matrix of clinical variables with each row corresponding to a patient and the columns are the variables.}
 
 \item{toxicity}{A vector of same length as the fractionation, contain toxicity status of
 all patients. Toxicity should be coded as 1 and no-toxicity coded as 0}
 
 \item{link}{The type of link function,should either be "logit" or "probit" link.}
 
-\item{n}{A vector or numeric constant, representing the \code{n} parameter in the
+\item{n}{A vector or numeric constant, representing the ```n``` parameter in the
 Kutcher and Burman EUD reduction scheme, and should lie between 0 and 1.
-The defualt value is \code{NULL}. If no \code{n} constant or vector is supplied, NTCP will
-try a grid of \code{n} values between 0 and 1 and return the fitted model parameters for each
-\code{n}.}
-
-\item{start.Value}{The starting values used by the \code{optim} function fit
-the model paramters (\code{theta},\code{TD_50},\code{m}). Must be a vector of length three,
-the first element must be \code{theta}, second \code{TD_50} and third \code{m}.
-The default starting values are \code{c(theta = 4, TD50 = 30, m = 1)}}
+The defualt value is ```NULL```. If no ```n``` constant or vector is supplied, NTCP will
+try a grid of ```n``` values between 0 and 1 and return the fitted model parameters for each
+```n```.}
 }
 \description{
-\code{NTCP}
+```NTCP```
 }
 \details{
 This function fits NTCP, Lyman models, and can account for fractionation. Logit  models

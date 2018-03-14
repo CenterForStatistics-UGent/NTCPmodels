@@ -1,13 +1,13 @@
 
-predict.NTCPmodels<-function (object, newDVH,newFractionation, type = c("link", "response","class"))
+predict.NTCPmodels<-function (object, newDVH,newXClin=NULL,newFractionation, type = c("link", "response","class"))
 {
   type = match.arg(type)
   len1<-length(object$n)
-  nNotNA<-c(1:len1)[!is.na(object$modelInfor[,2])]
+  nNotNA<-c(1:len1)[!is.na(object$betas[,2])]
 
   len3<-length(nNotNA)
 
-
+  #Using object info
   if (missing(newDVH))
   {
     EUD<-object$dataInfo
@@ -15,9 +15,8 @@ predict.NTCPmodels<-function (object, newDVH,newFractionation, type = c("link", 
     Link<-matrix(rep(NA,len2*len3),ncol = len3)
     for(i in 1:len3)
     {
-      Link[,i]<-xbeta(object$modelInfor[nNotNA[i],2:4],
-                      EUD[,nNotNA[i]],
-                      object$fractionation)
+      X<-cbind(rep(1,len2),object$dataInfo[,i],object$dataInfo[,i]*object$fractionation,object$XClinical)
+      Link[,i]<-as.matrix(X)%*%as.numeric(object$betas[i,])
     }
     pred<-Link
   }
@@ -33,9 +32,8 @@ predict.NTCPmodels<-function (object, newDVH,newFractionation, type = c("link", 
     Link<-matrix(rep(NA,len2*len3),ncol = len3)
     for(i in 1:len3)
     {
-      Link[,i]<-xbeta(object$modelInfor[nNotNA[i],2:4],
-                      EUD[,i],
-                      newFractionation)
+      X<-cbind(rep(1,len2), EUD[,i], EUD[,i]*newFractionation,newXClin)
+      Link[,i]<-as.matrix(X)%*%as.numeric(object$betas[i,])
     }
     pred<-Link
   }

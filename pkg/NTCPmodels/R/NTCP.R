@@ -12,7 +12,8 @@
 #' column must be the  volume recieving atmost that dose.
 #' @param fractionation A vector of same length as the ```DVH``` list,  which contains the dose per
 #' fraction for each patient.
-#' #' @param Xclin A numeric matrix of clinical variables with each row corresponding to a patient and the columns are the variables.
+#' @param XClin A numeric matrix of clinical variables
+#' with each row corresponding to a patient and the columns are the variables.
 #' @param  toxicity A vector of same length as the fractionation, contain toxicity status of
 #' all patients. Toxicity should be coded as 1 and no-toxicity coded as 0
 #' @param link The type of link function,should either be "logit" or "probit" link.
@@ -23,12 +24,13 @@
 #' ```n```.
 #' @return
 #' @examples
-#' fit<-NTCP(DVH,fractionation, toxicity,link="logit")
+#' fit<-NTCP(DVH=DVH,fractionation=fractionation, toxicity=toxicity,link="logit")
 #' summary(fit)
 
 
 
-NTCP<-function(DVH,XClin=NULL,
+NTCP<-function(DVH,
+               XClin=NULL,
                fractionation,
                toxicity,
                link=c("probit","logit"),
@@ -79,7 +81,7 @@ for(kk in 1:len2)
   {
   X<-cbind(rep(1,lln),preDVH$EUD[,kk],fractionation*preDVH$EUD[,kk],XClin)
   X<-as.matrix(X)
-  initialMod<- optim(fn= function(beta,X,y){
+  initialMod<- stats::optim(fn= function(beta,X,y){
                                   sum((y -X%*%beta)^2)
                                      },
                      lower = low,
@@ -91,9 +93,9 @@ for(kk in 1:len2)
 
   start.Value<-initialMod$par
   if(link=="probit")
-  fit<- tryCatch(expr=optim(start.Value, llf,X=X,
+  fit<- tryCatch(expr=stats::optim(start.Value, llf,X=X,
                             #gr=  gra.lf,
-                        y=toxicity,FUN=pnorm,
+                        y=toxicity,FUN=stats::pnorm,
                         method="L-BFGS-B", control=list(trace=TRUE, REPORT=1),
                         hessian=TRUE,
                         lower=low,upper=up
@@ -103,9 +105,9 @@ for(kk in 1:len2)
                return(NA)
              })
   else
-    fit<- tryCatch(expr=optim(start.Value, llf,X=X,
+    fit<- tryCatch(expr=stats::optim(start.Value, llf,X=X,
                               #gr=  gra.lf,
-                              y=toxicity,FUN=plogis,
+                              y=toxicity,FUN=stats::plogis,
                               method="L-BFGS-B",
                               control=list(trace=TRUE, REPORT=1),
                               hessian=TRUE,
@@ -122,7 +124,7 @@ for(kk in 1:len2)
 
 
 }
-paras<-na.omit(paras)
+paras<-stats::na.omit(paras)
 
   # exclude<-apply(paras[,c(2:4)],1,function(x)
   # {

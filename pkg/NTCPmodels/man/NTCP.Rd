@@ -12,9 +12,11 @@ NTCP(DVH, XClin = NULL, fractionation, toxicity, link = c("probit",
 data for a patient. The first column of the the ```data.frame```` must be the dose and the second
 column must be the  volume recieving atmost that dose.}
 
+\item{XClin}{A numeric matrix of clinical variables
+with each row corresponding to a patient and the columns are the variables.}
+
 \item{fractionation}{A vector of same length as the ```DVH``` list,  which contains the dose per
-fraction for each patient.
-#' @param Xclin A numeric matrix of clinical variables with each row corresponding to a patient and the columns are the variables.}
+fraction for each patient.}
 
 \item{toxicity}{A vector of same length as the fractionation, contain toxicity status of
 all patients. Toxicity should be coded as 1 and no-toxicity coded as 0}
@@ -35,6 +37,6 @@ This function fits NTCP, Lyman models, and can account for fractionation. Logit 
 can also be fitted
 }
 \examples{
-fit<-NTCP(DVH,fractionation, toxicity,link="logit")
+fit<-NTCP(DVH=DVH,fractionation=fractionation, toxicity=toxicity,link="logit")
 summary(fit)
 }

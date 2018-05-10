@@ -1,5 +1,5 @@
-summary.NTCPmodels<-function(object)
+summary.NTCPmodels<-function(object,...)
 {
-  print(object$lymanPar)
+  print(object$lymanPar,...)
 }
 

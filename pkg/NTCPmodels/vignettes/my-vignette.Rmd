@@ -28,15 +28,15 @@ The simplest way to install `NTCPmodels` is by using the command
 NTCP models will adequately estimate an organ's complication probability after being irradiated with a given dose if the dose were uniformly distribution (homogeneous) throughout the organ receiving the dose. This is the most critical assumption of NTCP models. However, the total dose that an irradiated organ receives is heterogeneous, this led to the advent of dose volume histograms, to capture some of the dose heterogeneity of organs. Figure: 1 describes how data eventually gets into an NTCP model from a 3-D CT scans through the DVH. 
 
 ```{r Flowdiagram_DVH, echo=FALSE,fig.width=7, fig.height=5, warning=FALSE,message=FALSE,fig.cap="Figure: 1 Flow-diagram showing the progress of data from 3-D CT (Computed tomography) scans to dose volume distributions (DVH). DVH data is reduced via means of a reduction scheme to an equivalence uniform dose (EUD) that is normalized to an equivalent dose at 'x' Grays, usually 'x=2'. The NTCP (normal tissue complication probability)  model uses the EUD  for the estimation of parameters."}
-library(diagram)
-openplotmat(main = "")
-elpos <- coordinates (c(1, 1,1,1,1), mx = 0, my = 0)
+#library(diagram)
+diagram::openplotmat(main = "")
+elpos <- diagram::coordinates (c(1, 1,1,1,1), mx = 0, my = 0)
 #elpos[,2]<-seq(1,0,length.out = 5)
-straightarrow(from = elpos[1, ], to = elpos[2, ], lty = 1, lcol = 1,arr.pos = 0.6)
-straightarrow(from = elpos[2, ], to = elpos[3, ], lty = 1, lcol = 1,arr.pos = 0.6)
-straightarrow(from = elpos[3, ], to = elpos[4, ], lty = 1, lcol = 1,arr.pos = 0.6)
+diagram::straightarrow(from = elpos[1, ], to = elpos[2, ], lty = 1, lcol = 1,arr.pos = 0.6)
+diagram::straightarrow(from = elpos[2, ], to = elpos[3, ], lty = 1, lcol = 1,arr.pos = 0.6)
+diagram::straightarrow(from = elpos[3, ], to = elpos[4, ], lty = 1, lcol = 1,arr.pos = 0.6)
 
-bentarrow(from = elpos[4, ], to = elpos[5, ],lty=1,lcol=1)
+diagram::bentarrow(from = elpos[4, ], to = elpos[5, ],lty=1,lcol=1)
 
 labels<-c("(1) 3-D CT scans",
           "(2) DVH", 
@@ -44,11 +44,11 @@ labels<-c("(1) 3-D CT scans",
           "(4) Correction for fractionation (EQDx)",
           "(5) Fitting NTCP models")
  cex<-0.7
- textrect (elpos[1, ], 0.15, 0.05, lab = labels[1], cex = cex)
- textrect (elpos[2, ], 0.1, 0.05, lab = labels[2], cex = cex)
- textrect (elpos[3, ], 0.2, 0.05, lab = labels[3], cex =cex)
- textrect (elpos[4, ], 0.2, 0.05, lab = labels[4], cex = cex)
- textrect (elpos[5, ], 0.2, 0.05, lab = labels[5], cex = cex)
+ diagram::textrect (elpos[1, ], 0.15, 0.05, lab = labels[1], cex = cex)
+ diagram::textrect (elpos[2, ], 0.1, 0.05, lab = labels[2], cex = cex)
+ diagram::textrect (elpos[3, ], 0.2, 0.05, lab = labels[3], cex =cex)
+ diagram::textrect (elpos[4, ], 0.2, 0.05, lab = labels[4], cex = cex)
+ diagram::textrect (elpos[5, ], 0.2, 0.05, lab = labels[5], cex = cex)
 ```
 
 In Figure:1 the treatment planning systems exports the DVH (Dose Volume Histograms) from 3-D scans. Reduction schemes like, e.g., the equivalent uniform dose (EUD) of Kutcher and Burman or the biological EUD (BEUD) transforms the DVH into a single dose. The equivalence dose at two Grays (EQD2) for example, corrects for fractionation differences between patients to a standard value of two Grays. The NTCP model estimates parameters of interest based on the resulting EUD reduced and  EQD2 transformed DVH data.    

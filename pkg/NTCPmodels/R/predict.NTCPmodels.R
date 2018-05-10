@@ -1,5 +1,9 @@
 
-predict.NTCPmodels<-function (object, newDVH,newXClin=NULL,newFractionation, type = c("link", "response","class"))
+predict.NTCPmodels<-function (object,
+                              newDVH,
+                              newXClin=NULL,
+                              newFractionation,
+                              type = c("link", "response","class"),...)
 {
   type = match.arg(type)
   len1<-length(object$n)
@@ -43,9 +47,9 @@ predict.NTCPmodels<-function (object, newDVH,newXClin=NULL,newFractionation, typ
   if(type %in% c("response","class"))
   {
     if(object$link=="probit")
-      response<-apply(Link,2,pnorm)
+      response<-apply(Link,2,stats::pnorm)
     else
-      response<-apply(Link,2,plogis)
+      response<-apply(Link,2,stats::plogis)
     pred<-response
   }
 

@@ -34,6 +34,8 @@ prepare.DVH<-function(DVH,n=NULL)
 
     EUDn[,k]<- unlist(lapply(dvh, function(x,k)(sum(((x[,1]+10)^(1/n[k]))*x[,2]))^n[k],k=k))
   }
+  EUDn<-data.frame(EUDn)
+  names(EUDn)<-paste("n =",round(n,2))
 maxEUD<-max(EUDn)
   list(EUD=EUDn/maxEUD
        ,maxEUD=maxEUD, n=n)
